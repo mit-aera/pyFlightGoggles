@@ -1,2 +1,2 @@
-# pyFlightGoggles
-Python bindings for photorealistic hardware-in-the-loop agile flight simulation, FlightGoggles. Developed by MIT AERA.
+# FlightGoggles-PythonClient
+Python Client for FlightGoggles

@@ -1,0 +1,17 @@
+position_control:
+    controller_rate: 100
+    state_timeout_ms: 100
+    world_frame: "world"
+    waypoint_frame: "uav/reference"
+    vehicle_frame: "uav/imu"
+    velocity_topic: "/uav/velocity"
+    ratethrust_topic: "/uav/input/rateThrust"
+    reset_topic: "/uav/positioncontrol_reset"
+    position_gain: [7., 7., 7.]
+    velocity_gain: [3., 3., 3.]
+    integrator_gain: [0., 0., 0.]
+    attitude_gain: [10., 10., 10.]
+    thrust_direction: [0., 0., 1.]
+    vehicle_mass: 1.0
+    max_angrate: 8.0
+    max_acceleration: 3.0

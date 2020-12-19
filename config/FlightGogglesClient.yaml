@@ -1,0 +1,34 @@
+state:
+    sceneFilename: "Stata_GroundFloor"
+    camWidth: 1024
+    camHeight: 250
+    camFOV: 70.0
+    camDepthScale: 0.20
+
+renderer:
+    0:
+        inputPort: "10253"
+        outputPort: "10254"
+
+camera_model:
+    0:
+        ID: cam0
+        channels: 3
+        isDepth: false
+        outputIndex: 0
+        hasCollisionCheck: false
+        doesLandmarkVisCheck: false
+        initialPose: [0,0,0,1,0,0,0]
+        renderer: 0
+        freq: 30
+        outputShaderType: -1
+
+vehicle_model:
+    uav1:
+        type: "uav"
+        initialPose: [50.0,-49.0,-2.0,0,0,0,1]
+        imu_freq: 200
+        cameraInfo:
+            cam0:
+                relativePose: [0,0,0,1,0,0,0]
+                freq: 30

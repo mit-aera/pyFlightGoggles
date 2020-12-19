@@ -1,0 +1,37 @@
+state:
+    # sceneFilename: "Abandoned_Factory_Morning"
+    sceneFilename: "Stata_GroundFloor"
+    camWidth: 640
+    camHeight: 480
+    camFOV: 70.0
+    camDepthScale: 0.20
+    map:
+        filename: "Stata_GroundFloor.png"
+        x_min: -31.0
+        x_max: 78.5
+        y_min: -68.1
+        y_max: 78.8
+        map_margin: 0
+        map_scale: 3
+
+renderer:
+    0:
+        inputPort: "10253"
+        outputPort: "10254"
+
+camera_model:
+    0:
+        ID: cam1
+        channels: 3
+        renderer: 0
+        freq: 30
+        outputShaderType: -1
+
+vehicle_model:
+    car1:
+        type: "car"
+        initialPose: [18.5,-6.5,-0.2,1.0,0,0,0]
+        imu_freq: 200
+        cameraInfo:
+            cam1:
+                relativePose: [0,0,0,1,0,0,0]

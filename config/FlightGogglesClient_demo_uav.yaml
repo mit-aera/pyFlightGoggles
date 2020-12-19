@@ -1,0 +1,29 @@
+state:
+    # sceneFilename: "Abandoned_Factory_Morning"
+    sceneFilename: "Stata_GroundFloor"
+    camWidth: 640
+    camHeight: 480
+    camFOV: 70.0
+    camDepthScale: 0.20
+
+renderer:
+    0:
+        inputPort: "10253"
+        outputPort: "10254"
+
+camera_model:
+    0:
+        ID: cam1
+        channels: 3
+        renderer: 0
+        freq: 30
+        outputShaderType: -1
+
+vehicle_model:
+    uav1:
+        type: "uav"
+        initialPose: [18.5,-6.5,-2,1.0,0,0,0]
+        imu_freq: 200
+        cameraInfo:
+            cam1:
+                relativePose: [0,0,0,1,0,0,0]
