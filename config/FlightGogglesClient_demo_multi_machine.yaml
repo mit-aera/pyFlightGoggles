@@ -5,14 +5,6 @@ state:
     camHeight: 480
     camFOV: 70.0
     camDepthScale: 0.20
-    map:
-        filename: "Stata_GroundFloor.png"
-        x_min: -31.0
-        x_max: 78.5
-        y_min: -68.1
-        y_max: 78.8
-        map_margin: 0
-        map_scale: 3
 
 renderer:
     0:
