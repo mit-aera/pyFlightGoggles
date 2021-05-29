@@ -6,8 +6,7 @@ docker run \
     -it \
     --publish-all \
     --rm \
-    --volume "${DIR}/../FlightGoggles-PythonClient:/root/FlightGoggles-PythonClient" \
-    --gpus all \
+    --volume "${DIR}/../pyFlightGoggles:/root/pyFlightGoggles" \
     --name py_flightgoggles \
     --privileged \
     --net "host" \

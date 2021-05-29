@@ -47,8 +47,8 @@ with open("README.md", "r") as fh:
 
 setup(
     name="flightgoggles",
-    version="1.0.2",
-    author="Gilhyun Ryou",
+    version="1.0.0",
+    author="MIT AERA",
     author_email="ghryou@mit.edu",
     description="python wrapper for FlightGoggles",
     long_description=long_description,

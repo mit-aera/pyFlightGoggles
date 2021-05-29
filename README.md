@@ -1,2 +1,2 @@
-# FlightGoggles-PythonClient
+# pyFlightGoggles
 Python Client for FlightGoggles

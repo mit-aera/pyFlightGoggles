@@ -79,8 +79,8 @@ target_link_libraries(car_dynamics_sim PRIVATE
 )
 
 pybind11_add_module(flightgoggles_client SHARED
-  src/pyFlightGogglesClient.cpp
-  src/moduleFlightGogglesClient.cpp
+  ${INCLUDED_LIBS_DIR}/FlightGogglesClient/pyFlightGogglesClient.cpp
+  ${INCLUDED_LIBS_DIR}/FlightGogglesClient/moduleFlightGogglesClient.cpp
 )
 target_link_libraries(flightgoggles_client PRIVATE 
   FlightGogglesClient

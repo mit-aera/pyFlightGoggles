@@ -29,18 +29,21 @@ camera_model:
         renderer: 0
         freq: 30
         outputShaderType: -1
+        hasCollisionCheck: False
     1:
         ID: cam1
         channels: 3
         renderer: 0
         freq: 30
         outputShaderType: -1
+        hasCollisionCheck: False
     2:
         ID: cam2
         channels: 3
         renderer: 1
         freq: 30
         outputShaderType: -1
+        hasCollisionCheck: False
 
 vehicle_model:
     uav1:

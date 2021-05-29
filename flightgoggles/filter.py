@@ -2,9 +2,7 @@
 # coding: utf-8
 
 import numpy as np
-import cv2
-import signal
-import os, sys, time, copy, argparse
+import os, sys, time, copy, yaml
 
 from .utils import *
 

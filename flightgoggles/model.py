@@ -2,8 +2,6 @@
 # coding: utf-8
 
 import numpy as np
-import cv2
-import signal
 import os, sys, time, copy, argparse, yaml
 from multicopter_dynamics_sim import MulticopterDynamicsSim as uav_dyns
 from car_dynamics_sim import CarDynamicsSim as car_dyns
@@ -572,16 +570,16 @@ class CarModel(VehicleModel):
         self.car_sim.setVehicleState(self.pos[:2], self.vel[:2], self.heading)
 
         for cam_key in self.camera_info.keys():
-                car_state_t = self.car_sim.getVehicleState()
-                pos_t = self.pos
-                pos_t[:2] = car_state_t["position"]
-                pos_t2, att_t2 = update_pose_with_bias(
-                    pos_t, Euler2quat(np.array([0,0,car_state_t["heading"][0]])), 
-                    self.camera_info[cam_key]['relativePose'][:3], 
-                    self.camera_info[cam_key]['relativePose'][3:7])
-                self.camera_pose[cam_key]["position"] = pos_t2
-                self.camera_pose[cam_key]["attitude"] = att_t2
-                self.camera_pose[cam_key]["flag_update"] = True
+            car_state_t = self.car_sim.getVehicleState()
+            pos_t = self.pos
+            pos_t[:2] = car_state_t["position"]
+            pos_t2, att_t2 = update_pose_with_bias(
+                pos_t, Euler2quat(np.array([0,0,car_state_t["heading"][0]])), 
+                self.camera_info[cam_key]['relativePose'][:3], 
+                self.camera_info[cam_key]['relativePose'][3:7])
+            self.camera_pose[cam_key]["position"] = pos_t2
+            self.camera_pose[cam_key]["attitude"] = att_t2
+            self.camera_pose[cam_key]["flag_update"] = True
 
         for objects_key in self.objects_info.keys():
             uav_state_t = self.uav_sim.getVehicleState()

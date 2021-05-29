@@ -1,9 +1,24 @@
 state:
-    sceneFilename: "Stata_GroundFloor"
+    # sceneFilename: "Hazelwood_Loft_Full_Night"
+    # sceneFilename: "Museum_Day_Multiroom"
+    # sceneFilename: "Museum_Day_Small"
+    # sceneFilename: "NYC_Subway"
+    sceneFilename: "Butterfly_World"
+    # sceneFilename: "Abandoned_Factory_Sunset"
+    # sceneFilename: "Stata_GroundFloor"
+    # sceneFilename: "Stata_Basement"
     camWidth: 1024
-    camHeight: 250
-    camFOV: 70.0
+    camHeight: 150
+    camFOV: 60.0
     camDepthScale: 0.20
+    map:
+        filename: "Stata_GroundFloor.png"
+        x_min: -31.0
+        x_max: 78.5
+        y_min: -68.1
+        y_max: 78.8
+        map_margin: 0
+        map_scale: 5
 
 renderer:
     0:
@@ -12,7 +27,7 @@ renderer:
 
 camera_model:
     0:
-        ID: cam0
+        ID: Camera_Left_RGB
         channels: 3
         isDepth: false
         outputIndex: 0
@@ -22,13 +37,136 @@ camera_model:
         renderer: 0
         freq: 30
         outputShaderType: -1
+    1:
+        ID: Camera_Left_OpticalFlow
+        channels: 3
+        isDepth: false
+        outputIndex: 1
+        hasCollisionCheck: false
+        doesLandmarkVisCheck: false
+        initialPose: [0,0,0,1,0,0,0]
+        renderer: 0
+        freq: 30
+        outputShaderType: 6
+    2:
+        ID: Camera_Left_Depth
+        channels: 1
+        isDepth: false
+        outputIndex: 2
+        hasCollisionCheck: false
+        doesLandmarkVisCheck: false
+        initialPose: [0,0,0,1,0,0,0]
+        renderer: 0
+        # initialPose: [-6.5,21.5,5.0,1,0,0,0]
+        freq: 30
+        outputShaderType: 3   
+    3:
+        ID: Camera_Left_SurfaceNormal
+        channels: 3
+        isDepth: false
+        outputIndex: 2
+        hasCollisionCheck: false
+        doesLandmarkVisCheck: false
+        initialPose: [0,0,0,1,0,0,0]
+        renderer: 0
+        # initialPose: [-6.5,21.5,5.0,1,0,0,0]
+        freq: 30
+        outputShaderType: 4
+    4:
+        ID: Camera_Left_Segmentation
+        channels: 3
+        isDepth: false
+        outputIndex: 2
+        hasCollisionCheck: false
+        doesLandmarkVisCheck: false
+        initialPose: [0,0,0,1,0,0,0]
+        renderer: 0
+        # initialPose: [-6.5,21.5,5.0,1,0,0,0]
+        freq: 30
+        outputShaderType: 1    
+    5:
+        ID: Camera_Left_Gray
+        channels: 3
+        isDepth: false
+        outputIndex: 2
+        hasCollisionCheck: false
+        doesLandmarkVisCheck: false
+        initialPose: [0,0,0,1,0,0,0]
+        renderer: 0
+        # initialPose: [-6.5,21.5,5.0,1,0,0,0]
+        freq: 30
+        outputShaderType: 5
+    # 1:
+    #     ID: Camera_RGB_right
+    #     channels: 3
+    #     isDepth: false
+    #     outputIndex: 0
+    #     hasCollisionCheck: true
+    #     doesLandmarkVisCheck: false
+    #     initialPose: [0,0,0,1,0,0,0]
+    # 2:    
+    #     ID: Camera_RGB_stationary
+    #     channels: 3
+    #     isDepth: false
+    #     outputIndex: 0
+    #     hasCollisionCheck: true
+    #     doesLandmarkVisCheck: false
+    #     initialPose: [-6.5,21.5,5.0,1,0,0,0]
+    # 3:
+    #     ID: Camera_D
+    #     channels: 1
+    #     isDepth: true
+    #     outputIndex: 1
+    #     hasCollisionCheck: true
+    #     doesLandmarkVisCheck: false
+
+objects:
+    0:
+         ID: Gate1
+         prefabID: gate
+         size_x: 100
+         size_y: 100
+         size_z: 100
+         renderer: 0
+         outputIndex: 0
 
 vehicle_model:
     uav1:
         type: "uav"
-        initialPose: [50.0,-49.0,-2.0,0,0,0,1]
+        # initialPose: [-6.5,21.5,5.0,1,0,0,0]
+        # initialPose: [-18.5,6.5,-5.0,0.707,0,0,-0.707]
+        # initialPose: [-18.5,6.5,-5.0,1.0,0,0,0]
+        # initialPose: [18.5,-6.5,-5.0,1.0,0,0,0]
+        # initialPose: [18.5,-6.5,-5.0,0.707,0,0,0.707]
+        # initialPose: [50.0,-49.0,-5.0,0.463,0,0,-0.886]
+        initialPose: [0.0,1.5,-1.0,0.5,0,0,-0.5]
         imu_freq: 200
         cameraInfo:
-            cam0:
-                relativePose: [0,0,0,1,0,0,0]
+            Camera_Left_RGB:
+                relativePose: [0,0.2,0,1,0,0,0]
                 freq: 30
+            Camera_Left_OpticalFlow:
+                relativePose: [0,-0.2,0,1,0,0,0]
+                freq: 30
+            Camera_Left_Depth:
+                relativePose: [0,-0.2,0,1,0,0,0]
+                freq: 30
+            Camera_Left_SurfaceNormal:
+                relativePose: [0,-0.2,0,1,0,0,0]
+                freq: 30
+            Camera_Left_Segmentation:
+                relativePose: [0,-0.2,0,1,0,0,0]
+                freq: 30
+            Camera_Left_Gray:
+                relativePose: [0,-0.2,0,1,0,0,0]
+                freq: 30
+    
+    
+    # car1:
+    #     type: "car"
+    #     initialPose: [18.5,-6.5,-3.5,1.0,0,0,0]
+    #     imu_freq: 200
+    #     cameraInfo:
+    #         cam1:
+    #             relativePose: [0,0,0,1,0,0,0]
+    #             freq: 30

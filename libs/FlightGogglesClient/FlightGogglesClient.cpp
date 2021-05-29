@@ -39,7 +39,6 @@ void FlightGogglesClient::initializeConnections()
     upload_socket.bind(client_address + ":" + upload_port);
     // create and bind a download_socket
     download_socket.set(zmqpp::socket_option::receive_high_water_mark, 6);
-//    download_socket.set(zmqpp::socket_option::receive_buffer_size, 1024*768*3*6);
     download_socket.bind(client_address + ":" + download_port);
     download_socket.subscribe("");
     std::cout << "Done!" << std::endl;
@@ -66,31 +65,31 @@ void FlightGogglesClient::terminateConnections()
  * @param cam_index Index of the camera
  */
 void FlightGogglesClient::setCameraPoseUsingROSCoordinates(Transform3 ros_pose, int cam_index) {
-  // To transforms
-  Transform3 NED_pose = convertROSToNEDCoordinates(ros_pose);
-  Transform3 unity_pose = convertNEDGlobalPoseToGlobalUnityCoordinates(NED_pose);
-//Transform3 unity_pose = convertEDNGlobalPoseToGlobalUnityCoordinates(ros_pose);
+    // To transforms
+    Transform3 NED_pose = convertROSToNEDCoordinates(ros_pose);
+    Transform3 unity_pose = convertNEDGlobalPoseToGlobalUnityCoordinates(NED_pose);
+    // Transform3 unity_pose = convertEDNGlobalPoseToGlobalUnityCoordinates(ros_pose);
 
-  // Extract position and rotation
-  std::vector<double> position = {
-    unity_pose.translation()[0],
-    unity_pose.translation()[1],
-    unity_pose.translation()[2],
-  };
+    // Extract position and rotation
+    std::vector<double> position = {
+        unity_pose.translation()[0],
+        unity_pose.translation()[1],
+        unity_pose.translation()[2],
+    };
 
-  Eigen::Matrix3d rotationMatrix = unity_pose.rotation();
-  Quaternionx quat(rotationMatrix);
+    Eigen::Matrix3d rotationMatrix = unity_pose.rotation();
+    Quaternionx quat(rotationMatrix);
 
-  std::vector<double> rotation = {
-    quat.x(),
-    quat.y(),
-    quat.z(),
-    quat.w(),
-  };
+    std::vector<double> rotation = {
+        quat.x(),
+        quat.y(),
+        quat.z(),
+        quat.w(),
+    };
 
-  // Set camera position and rotation
-  state.cameras[cam_index].position = position;
-  state.cameras[cam_index].rotation = rotation;
+    // Set camera position and rotation
+    state.cameras[cam_index].position = position;
+    state.cameras[cam_index].rotation = rotation;
 }
 
 /**
@@ -99,32 +98,32 @@ void FlightGogglesClient::setCameraPoseUsingROSCoordinates(Transform3 ros_pose, 
  * @param cam_index Index of the camera
  */
 void FlightGogglesClient::setObjectPoseUsingROSCoordinates(Transform3 ros_pose, int object_index) {
-  // To transforms
-  Transform3 NED_pose = convertROSToNEDCoordinates(ros_pose);
-  Transform3 unity_pose = convertNEDGlobalPoseToGlobalUnityCoordinates(NED_pose);
-//Transform3 unity_pose = convertEDNGlobalPoseToGlobalUnityCoordinates(ros_pose);
+    // To transforms
+    Transform3 NED_pose = convertROSToNEDCoordinates(ros_pose);
+    Transform3 unity_pose = convertNEDGlobalPoseToGlobalUnityCoordinates(NED_pose);
+    // Transform3 unity_pose = convertEDNGlobalPoseToGlobalUnityCoordinates(ros_pose);
 
-  // Extract position and rotation
-  std::vector<double> position = {
-    unity_pose.translation()[0],
-    unity_pose.translation()[1],
-    unity_pose.translation()[2],
-  };
+    // Extract position and rotation
+    std::vector<double> position = {
+        unity_pose.translation()[0],
+        unity_pose.translation()[1],
+        unity_pose.translation()[2],
+    };
 
-  Eigen::Matrix3d rotationMatrix = unity_pose.rotation();
-  Quaternionx quat(rotationMatrix);
+    Eigen::Matrix3d rotationMatrix = unity_pose.rotation();
+    Quaternionx quat(rotationMatrix);
 
-  std::vector<double> rotation = {
-    quat.x(),
-    quat.y(),
-    quat.z(),
-    quat.w(),
-  };
+    std::vector<double> rotation = {
+        quat.x(),
+        quat.y(),
+        quat.z(),
+        quat.w(),
+    };
 
-  std::cout << "Objects size: " << state.objects.size() << std::endl;
-  // Set camera position and rotation
-  state.objects[object_index].position = position;
-  state.objects[object_index].rotation = rotation;
+    std::cout << "Objects size: " << state.objects.size() << std::endl;
+    // Set camera position and rotation
+    state.objects[object_index].position = position;
+    state.objects[object_index].rotation = rotation;
 }
 
 /**
@@ -134,17 +133,6 @@ void FlightGogglesClient::setObjectPoseUsingROSCoordinates(Transform3 ros_pose, 
 */
 bool FlightGogglesClient::requestRender()
 {
-    // Make sure that we have a pose that is newer than the last rendered pose.
-//    if (!(state.ntime > last_uploaded_utime))
-//    {
-//        // Skip this render frame.
-//        return false;
-//    }
-
-
-    // Debug
-    // std::cout << "Frame " << std::to_string(state.ntime) << std::endl;
-
     // Create new message object
     zmqpp::message msg;
     // Add topic header
@@ -160,12 +148,6 @@ bool FlightGogglesClient::requestRender()
     // Output debug messages at a low rate
     if (state.ntime > last_upload_debug_utime + 1e9)
     {
-//        std::cout << "Last message sent: \"";
-//        std::cout << msg.get<std::string>(0) << std::endl;
-//        // Print JSON object
-//        std::cout << json_msg.dump(4) << std::endl;
-//        std::cout << "===================" << std::endl;
-        // reset time of last debug message
         last_upload_debug_utime = state.ntime;
     }
     // Send message without blocking.
@@ -188,13 +170,9 @@ unity_incoming::RenderOutput_t FlightGogglesClient::handleImageResponse()
     zmqpp::message msg;
     download_socket.receive(msg);
 
-    // Sanity check the packet.
-    // if (msg.parts() <= 1)
-    // {
-    //     return NULL;
-    // }
     // Unpack message metadata.
     std::string json_metadata_string = msg.get(0);
+    
     // Parse metadata.
     unity_incoming::RenderMetadata_t renderMetadata = json::parse(json_metadata_string);
 
@@ -217,54 +195,45 @@ unity_incoming::RenderOutput_t FlightGogglesClient::handleImageResponse()
     // For each camera, save the received image.
     auto num_threads = renderMetadata.cameraIDs.size();
     const uint8_t stride = 3;
-    // #pragma omp parallel
-    // #pragma omp for
-    for (int i = 0; i < num_threads; i++)
-    {
-
-	cv::Mat new_image;
-
+    
+    for (int i = 0; i < num_threads; i++) {
+        cv::Mat new_image;
         // Reshape the received image
-	if (renderMetadata.channels[i] != 2){
-        
-          // Get raw image bytes from ZMQ message.
-          // WARNING: This is a zero-copy operation that also casts the input to an array of unit8_t.
-          // when the message is deleted, this pointer is also dereferenced.
-          const uint8_t* imageData;
-          msg.get(imageData, i + 1);
-          // // ALL images comes as 3-channel RGB images from Unity. Calculate the row length
-          // uint32_t bufferRowLength = renderMetadata.camWidth * renderMetadata.channels[i];
+        if (renderMetadata.channels[i] != 2) {
+            // Get raw image bytes from ZMQ message.
+            // WARNING: This is a zero-copy operation that also casts the input to an array of unit8_t.
+            // when the message is deleted, this pointer is also dereferenced.
+            const uint8_t* imageData;
+            msg.get(imageData, i + 1);
+            // // ALL images comes as 3-channel RGB images from Unity. Calculate the row length
+            // uint32_t bufferRowLength = renderMetadata.camWidth * renderMetadata.channels[i];
 
-          // Pack image into cv::Mat
-          new_image = cv::Mat(renderMetadata.camHeight, renderMetadata.camWidth, CV_MAKETYPE(CV_8U, stride));
-	  memcpy(new_image.data, imageData, renderMetadata.camWidth * renderMetadata.camHeight * stride );
-	} else {
-	  // This is a 16UC1 depth image
-	  
-	  // Get raw image bytes from ZMQ message.
-          // WARNING: This is a zero-copy operation that also casts the input to an array of unit8_t.
-          // when the message is deleted, this pointer is also dereferenced.
-          const uint16_t* imageData;
-          msg.get(imageData, i + 1);
-          // // ALL images comes as 3-channel RGB images from Unity. Calculate the row length
-          // uint32_t bufferRowLength = renderMetadata.camWidth * renderMetadata.channels[i];
-
-          new_image = cv::Mat(renderMetadata.camHeight, renderMetadata.camWidth, CV_MAKETYPE(CV_16U, 1));
-         memcpy(new_image.data, imageData, renderMetadata.camWidth * renderMetadata.camHeight * 2);
- 
+            // Pack image into cv::Mat
+            new_image = cv::Mat(renderMetadata.camHeight, renderMetadata.camWidth, CV_MAKETYPE(CV_8U, stride));
+            memcpy(new_image.data, imageData, renderMetadata.camWidth * renderMetadata.camHeight * stride );
+        } else {
+            // This is a 16UC1 depth image
+            // Get raw image bytes from ZMQ message.
+            // WARNING: This is a zero-copy operation that also casts the input to an array of unit8_t.
+            // when the message is deleted, this pointer is also dereferenced.
+            const uint16_t* imageData;
+            msg.get(imageData, i + 1);
+            // // ALL images comes as 3-channel RGB images from Unity. Calculate the row length
+            // uint32_t bufferRowLength = renderMetadata.camWidth * renderMetadata.channels[i];
+            new_image = cv::Mat(renderMetadata.camHeight, renderMetadata.camWidth, CV_MAKETYPE(CV_16U, 1));
+            memcpy(new_image.data, imageData, renderMetadata.camWidth * renderMetadata.camHeight * 2);
        }
-	    
+
         // Tell OpenCv that the input is RGB.
         if (renderMetadata.channels[i]==3){
-           if (stride == 3)
-              cv::cvtColor(new_image, new_image, CV_RGB2BGR);
-           if (stride == 4)
-             cv::cvtColor(new_image, new_image, CV_BGRA2BGR);
+            if (stride == 3)
+                cv::cvtColor(new_image, new_image, CV_RGB2BGR);
+            if (stride == 4)
+                cv::cvtColor(new_image, new_image, CV_BGRA2BGR);
         }
 
         // Flip image since OpenCV origin is upper left, but Unity's is lower left.
-	cv::flip(new_image, new_image, 0);
-
+        cv::flip(new_image, new_image, 0);
 
         // Add image to output vector
         output.images.at(i) = new_image;
@@ -276,12 +245,6 @@ unity_incoming::RenderOutput_t FlightGogglesClient::handleImageResponse()
     // Output debug at 1hz
     if (getTimestamp() > last_download_debug_utime + 1e6)
     {
-        // Log update FPS
-//        std::cout << "Update rate: "
-//                  << (num_frames * 1e6) /
-//                         (getTimestamp() - last_download_debug_utime)
-//                  << " ms_latency: " << u_packet_latency / 1e3 << std::endl;
-
         last_download_debug_utime = getTimestamp();
         num_frames = 0;
     }

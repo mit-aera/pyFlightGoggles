@@ -4,3 +4,9 @@
 [submodule "libs/pybind11"]
 	path = libs/pybind11
 	url = https://github.com/pybind/pybind11.git
+[submodule "libs/multicopterDynamicsSim"]
+	path = libs/multicopterDynamicsSim
+	url = https://github.com/mit-aera/multicopterDynamicsSim.git
+[submodule "libs/carDynamicsSim"]
+	path = libs/carDynamicsSim
+	url = https://github.com/mit-aera/carDynamicsSim.git

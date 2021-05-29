@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import signal
+import os, sys, time, copy, argparse, yaml
 import numpy as np
 import pandas as pd
 import cv2
-import signal
-import os, sys, time, copy, argparse
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -63,6 +63,14 @@ class flightgoggles_env():
             cfg_car = kwargs['cfg_car']
         else:
             cfg_car = "carDynamicsSim.yaml"
+        
+        if 'tmp_dir' in kwargs:
+            self.tmp_dir = kwargs['tmp_dir']
+        else:
+            curr_path = os.path.dirname(os.path.abspath(__file__))
+            self.tmp_dir = curr_path+"/../tmp/"
+            if not os.path.exists(self.tmp_dir):
+                os.makedirs(self.tmp_dir)
             
         fgc_cfg_path = os.path.join(cfg_dir, cfg_fgclient)
         uav_sim_cfg_path_default = os.path.join(cfg_dir, cfg_uav)
@@ -95,6 +103,10 @@ class flightgoggles_env():
                         self.fg_render_obj_info[renderer_key] = 0
                 
                 if 'camera_model' in cfg:
+                    ts = time.strftime('%Y-%b-%d-%H:%M:%S', time.gmtime())
+                    self.camera_img_dir = os.path.join(self.tmp_dir, ts)
+                    if not os.path.exists(self.camera_img_dir):
+                        os.makedirs(self.camera_img_dir)
                     for camera_key in cfg['camera_model'].keys():
                         self.camera_set[cfg['camera_model'][camera_key]['ID']] = dict()
                         renderer_key = cfg['camera_model'][camera_key]['renderer']
@@ -118,8 +130,13 @@ class flightgoggles_env():
                         self.fg_renderer[renderer_key].addCamera(
                             cfg['camera_model'][camera_key]['ID'], 
                             np.int(self.camera_set[cfg['camera_model'][camera_key]['ID']]["index"]),
-                            np.int(cfg['camera_model'][camera_key]['outputShaderType']))
+                            np.int(cfg['camera_model'][camera_key]['outputShaderType']),
+                            cfg['camera_model'][camera_key]['hasCollisionCheck'])
                         self.static_camera_keys.append(cfg['camera_model'][camera_key]['ID'])
+                        img_dir_t = os.path.join(self.camera_img_dir, cfg['camera_model'][camera_key]['ID'])
+                        if not os.path.exists(img_dir_t):
+                            os.makedirs(img_dir_t)
+                        self.camera_set[cfg['camera_model'][camera_key]['ID']]["img_dir"] = img_dir_t
 
                 if 'objects' in cfg:
                     for object_key in cfg['objects'].keys():
@@ -322,13 +339,20 @@ class flightgoggles_env():
                     img = res[res_key]
                     img_reshape = np.reshape(img,(self.cam_height,self.cam_width,self.camera_set[res_key]["channels"]))
                     # img_reshape = cv2.flip(cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB),-1)
-                    img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
+                    #img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
                     res_t[res_key] = img_reshape
                     img_log = dict()
                     img_log["timestamp"] = 0.0
-                    img_log["data"] = img_reshape
+                    
+                    file_path = os.path.join(self.camera_set[res_key]["img_dir"],"{0:019d}.png".format(np.uint64(img_log["timestamp"]*1e9)))
+                    if (self.camera_set[res_key]["channels"] == 1):
+                        cv2.imwrite(file_path, img_reshape.astype(np.uint16))
+                    else:
+                        cv2.imwrite(file_path, img_reshape.astype(np.uint8))
+                    
+                    img_log["data"] = file_path
                     self.camera_set[res_key]["logs"].append(img_log)
-        
+                    
         if flag_update_simulation:
             sim_time_last_max = 0
             for vehicle_key in self.vehicle_set.keys():
@@ -366,7 +390,19 @@ class flightgoggles_env():
             self.vehicle_set[vehicle_key]["model"].reset_state()
             self._update_state(vehicle_key)
             self.vehicle_set[vehicle_key]["logs"] = [copy.deepcopy(self.vehicle_set[vehicle_key]["model"].get_state())]
+        
+        if len(self.camera_set.keys()) > 0:
+            ts = time.strftime('%Y-%b-%d-%H:%M:%S', time.gmtime())
+            self.camera_img_dir = os.path.join(self.tmp_dir, ts)
+        
         for camera_key in self.camera_set.keys():
+            img_dir_t = os.path.join(self.camera_img_dir, camera_key)
+            if not os.path.exists(img_dir_t):
+                os.makedirs(img_dir_t)
+            self.camera_set[camera_key]["img_dir"] = img_dir_t
+
+            if not os.path.exists(self.camera_img_dir):
+                os.makedirs(self.camera_img_dir)
             if len(self.camera_set[camera_key]["logs"]) != 0:
                 if self.flag_started:
                     self.camera_set[camera_key]["logs"] = [self.camera_set[camera_key]["logs"][-1]]
@@ -543,7 +579,8 @@ class flightgoggles_env():
                 os.makedirs(dir_camera)
             for log in self.camera_set[camera_id]["logs"]:
                 file_path = os.path.join(dir_camera,"{0:019d}.png".format(np.uint64(log["timestamp"]*1e9)))
-                cv2.imwrite(file_path, cv2.cvtColor(log["data"], cv2.COLOR_BGR2RGB))
+                img_t = cv2.imread(log["data"], -1)
+                cv2.imwrite(file_path, img_t)
         return
 
     def _update_state(self, vehicle_id):
@@ -619,18 +656,26 @@ class flightgoggles_env():
                             img = res[res_key]
                             img_reshape = np.reshape(img,(self.cam_height,self.cam_width,self.camera_set[res_key]["channels"]))
                             # img_reshape = cv2.flip(cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB),-1)
-                            img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
+                            # img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
                             res_t[res_key] = img_reshape
                             # self.camera_set[res_key]["image"] = img_reshape
                             # print("key {} - len {}".format(res_key, len(self.camera_set[res_key]["logs"])))
                             img_log = dict()
                             img_log["timestamp"] = cam_time
-                            img_log["data"] = img_reshape
+                            
+                            file_path = os.path.join(self.camera_set[res_key]["img_dir"],"{0:019d}.png".format(np.uint64(cam_time*1e9)))
+                            if (self.camera_set[res_key]["channels"] == 1):
+                                cv2.imwrite(file_path, img_reshape.astype(np.uint16))
+                            else:
+                                cv2.imwrite(file_path, img_reshape.astype(np.uint8))
+
+                            img_log["data"] = file_path
                             self.camera_set[res_key]["logs"].append(img_log)
-                            # self.camera_set[res_key]["logs"].append(img_reshape)
                 except Exception:
+                    print('Got exception getting image')
                     continue
             except Exception:
+                print('Got exception getting image 2')
                 continue
             signal.alarm(0)
             break
@@ -685,10 +730,18 @@ class flightgoggles_env():
                                 res_t[res_key] = img_reshape
                                 # self.camera_set[res_key]["image"] = img_reshape
                                 # img_reshape = cv2.flip(cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB),-1)
-                                img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
+                                # img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
                                 img_log = dict()
                                 img_log["timestamp"] = cam_time
-                                img_log["data"] = img_reshape
+                            
+                                file_path = os.path.join(self.camera_set[res_key]["img_dir"],"{0:019d}.png".format(np.uint64(cam_time*1e9)))
+                                if (self.camera_set[res_key]["channels"] == 1):
+                                    cv2.imwrite(file_path, img_reshape.astype(np.uint16))
+                                else:
+                                    cv2.imwrite(file_path, img_reshape.astype(np.uint8))
+                                   
+
+                                img_log["data"] = file_path
                                 self.camera_set[res_key]["logs"].append(img_log)
 
                 except Exception:
@@ -734,15 +787,24 @@ class flightgoggles_env():
                             res_t[res_key] = img_reshape
                             # self.camera_set[res_key]["image"] = img_reshape
                             # img_reshape = cv2.flip(cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB),-1)
-                            img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
+                            # img_reshape = cv2.cvtColor(img_reshape, cv2.COLOR_BGR2RGB)
                             img_log = dict()
                             img_log["timestamp"] = cam_time
-                            img_log["data"] = img_reshape
+                            
+                            file_path = os.path.join(self.camera_set[res_key]["img_dir"],"{0:019d}.png".format(np.uint64(cam_time*1e9)))
+                            if (self.camera_set[res_key]["channels"] == 1):
+                                cv2.imwrite(file_path, img_reshape.astype(np.uint16))
+                            else:
+                                cv2.imwrite(file_path, img_reshape.astype(np.uint8))
+
+                            img_log["data"] = file_path
                             self.camera_set[res_key]["logs"].append(img_log)
 
-                except Exception:
+                except Exception as e:
+                    print(e)
                     continue
-            except Exception:
+            except Exception as e:
+                print(e)
                 continue
             signal.alarm(0)
             break
@@ -839,7 +901,9 @@ class flightgoggles_env():
                 if len(self.camera_set[camera_key]["logs"]) > 0:
                     plt.axis("off")
                     plt.tight_layout()
-                    plt.imshow(self.camera_set[camera_key]["logs"][-1]["data"])
+                    img_t = cv2.imread(self.camera_set[camera_key]["logs"][-1]["data"])
+                    img_t = cv2.cvtColor(img_t, cv2.COLOR_BGR2RGB)
+                    plt.imshow(img_t)
                     plt.title(camera_key)
                     plt.show()
                     plt.pause(0.1)
@@ -859,7 +923,9 @@ class flightgoggles_env():
                 # plt.imshow(cv2.cvtColor(self.camera_set[camera_key]["image"], cv2.COLOR_BGR2RGB))
                 ims = []
                 for img in self.camera_set[camera_key]["logs"]:
-                    im = plt.imshow(img["data"], animated=True)
+                    img_t = cv2.imread(img["data"])
+                    img_t = cv2.cvtColor(img_t, cv2.COLOR_BGR2RGB)
+                    im = plt.imshow(img_t, animated=True)
                     ims.append([im])
                 ani = animation.ArtistAnimation( \
                     fig, ims, \

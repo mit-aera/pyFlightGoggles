@@ -2,8 +2,7 @@
 # coding: utf-8
 
 import numpy as np
-import cv2
-import os, sys, time, copy, argparse
+import os, sys, time, copy, yaml
 from scipy.spatial.transform import Rotation as R
 from scipy.spatial.transform import Slerp
 from scipy import interpolate
@@ -36,7 +35,7 @@ def inv_quat(q):
 
 def vecvec2quat(vec1, vec2):
     quat = np.zeros(4)
-    quat[0] = np.sqrt((vec1.dot(vec1))*(vec2.dot(vec2))) + vec1.dot(vec2);
+    quat[0] = np.sqrt((vec1.dot(vec1))*(vec2.dot(vec2))) + vec1.dot(vec2)
 
     if quat[0] < 1e-6:
         quat[0] = 0.
@@ -45,13 +44,13 @@ def vecvec2quat(vec1, vec2):
             quat[2] = vec1[0]
             quat[3] = 0.
         else:
-            quat[1] = 0.;
-            quat[2] = -vec1[2];
-            quat[3] = vec1[1];
+            quat[1] = 0.
+            quat[2] = -vec1[2]
+            quat[3] = vec1[1]
     else:
-        quat[1] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
-        quat[2] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
-        quat[3] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+        quat[1] = vec1[1]*vec2[2] - vec1[2]*vec2[1]
+        quat[2] = vec1[2]*vec2[0] - vec1[0]*vec2[2]
+        quat[3] = vec1[0]*vec2[1] - vec1[1]*vec2[0]
     quat_norm = np.sqrt(quat[0]**2+quat[1]**2+quat[2]**2+quat[3]**2)
     quat /= quat_norm
     return quat

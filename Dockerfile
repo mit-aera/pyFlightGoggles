@@ -23,5 +23,5 @@ RUN python3.6 -m pip install -U virtualenv jupyter
 ENTRYPOINT jupyter notebook --generate-config && \
     echo 'c.NotebookApp.ip="127.0.0.1"' >> /root/.jupyter/jupyter_notebook_config.py && \
     echo 'c.NotebookApp.allow_root = True' >> /root/.jupyter/jupyter_notebook_config.py && \
-    cd /root/FlightGoggles-PythonClient && \
+    cd /root/pyFlightGoggles && \
     /bin/bash

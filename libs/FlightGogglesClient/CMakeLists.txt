@@ -17,8 +17,6 @@ find_library(ZeroMQ_LIBRARY
     PATHS ${PC_ZeroMQ_LIBRARY_DIRS}
 )
 
-message(STATUS "FGClient testtest")
-
 # Add FlightGogglesClient as library
 add_library(FlightGogglesClient SHARED FlightGogglesClient.cpp FlightGogglesClient.hpp)
 
