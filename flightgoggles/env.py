@@ -127,11 +127,15 @@ class flightgoggles_env():
                             self.camera_set[cfg['camera_model'][camera_key]['ID']]["currentPos"] = initialPose_t[:3]
                             self.camera_set[cfg['camera_model'][camera_key]['ID']]["currentAtt"] = initialPose_t[3:]
                         self.camera_set[cfg['camera_model'][camera_key]['ID']]["logs"] = []
+                        if 'hasCollisionCheck' in cfg['camera_model'][camera_key].keys():
+                            hasCollisionCheck_t = cfg['camera_model'][camera_key]['hasCollisionCheck']
+                        else:
+                            hasCollisionCheck_t = False
                         self.fg_renderer[renderer_key].addCamera(
                             cfg['camera_model'][camera_key]['ID'], 
                             np.int(self.camera_set[cfg['camera_model'][camera_key]['ID']]["index"]),
                             np.int(cfg['camera_model'][camera_key]['outputShaderType']),
-                            cfg['camera_model'][camera_key]['hasCollisionCheck'])
+                            hasCollisionCheck_t)
                         self.static_camera_keys.append(cfg['camera_model'][camera_key]['ID'])
                         img_dir_t = os.path.join(self.camera_img_dir, cfg['camera_model'][camera_key]['ID'])
                         if not os.path.exists(img_dir_t):
@@ -314,13 +318,6 @@ class flightgoggles_env():
             self.fg_renderer[self.object_set[object_id]["renderer"]] \
                  .setObjectPose(pos_t2, att_t2, self.object_set[object_id]["index"][self.object_set[object_id]["renderer"]])
         
-        sim_time_last_max = 0
-        for vehicle_key in self.vehicle_set.keys():
-            sim_time_last = self.vehicle_set[vehicle_key]["model"].sim_time
-            if sim_time_last_max == 0 or sim_time_last_max < sim_time_last:
-                sim_time_last_max = sim_time_last
-        if sim_time_last_max == 0:
-            self.reset_state()
         return
     
     def set_state_camera(self, camera_id, position, attitude, flag_save_logs=False, flag_update_simulation=True):
