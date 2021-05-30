@@ -3,11 +3,6 @@
 ## Documentation, Installation, & Usage Instructions
 Please refer to the [project website](https://flightgoggles.mit.edu) for project information and our [code documentation](https://flightgoggles-documentation.scrollhelp.site/fg/) for installation and usage instructions. 
 
-
-## Installation and Tutorials
-Please refer to the [documentation page](https://flightgoggles-documentation.scrollhelp.site/fg/) for installation and tutorials.
-
-
 ## pyFlightGoggles Description
 
 A framework for photorealistic hardware-in-the-loop agile flight simulation using Unity3D and python.
