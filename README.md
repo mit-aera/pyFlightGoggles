@@ -5,7 +5,7 @@ Please refer to the [project website](https://flightgoggles.mit.edu) for project
 
 ## pyFlightGoggles Description
 
-A framework for photorealistic hardware-in-the-loop agile flight simulation using Unity3D and python.
+A framework for photorealistic exteroceptive sensor simulation using Unity3D and python.
 
 ## Citation
 If you find this work useful for your research, please cite:
