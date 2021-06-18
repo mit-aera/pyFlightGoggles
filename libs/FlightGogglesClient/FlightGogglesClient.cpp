@@ -64,6 +64,71 @@ void FlightGogglesClient::terminateConnections()
  * @param ros_pose Pose of the camera
  * @param cam_index Index of the camera
  */
+void FlightGogglesClient::setCameraPoseUsingNEDCoordinates(Transform3 NED_pose, int cam_index) {
+    // To transforms
+    Transform3 unity_pose = convertNEDGlobalPoseToGlobalUnityCoordinates(NED_pose);
+    // Transform3 unity_pose = convertEDNGlobalPoseToGlobalUnityCoordinates(ros_pose);
+
+    // Extract position and rotation
+    std::vector<double> position = {
+        unity_pose.translation()[0],
+        unity_pose.translation()[1],
+        unity_pose.translation()[2],
+    };
+
+    Eigen::Matrix3d rotationMatrix = unity_pose.rotation();
+    Quaternionx quat(rotationMatrix);
+
+    std::vector<double> rotation = {
+        quat.x(),
+        quat.y(),
+        quat.z(),
+        quat.w(),
+    };
+
+    // Set camera position and rotation
+    state.cameras[cam_index].position = position;
+    state.cameras[cam_index].rotation = rotation;
+}
+
+/**
+ * setCameraPoseUsingROSCoordinates accepts camera pose in ros frame
+ * @param ros_pose Pose of the camera
+ * @param cam_index Index of the camera
+ */
+void FlightGogglesClient::setObjectPoseUsingNEDCoordinates(Transform3 NED_pose, int object_index) {
+    // To transforms
+    Transform3 unity_pose = convertNEDGlobalPoseToGlobalUnityCoordinates(NED_pose);
+    // Transform3 unity_pose = convertEDNGlobalPoseToGlobalUnityCoordinates(ros_pose);
+
+    // Extract position and rotation
+    std::vector<double> position = {
+        unity_pose.translation()[0],
+        unity_pose.translation()[1],
+        unity_pose.translation()[2],
+    };
+
+    Eigen::Matrix3d rotationMatrix = unity_pose.rotation();
+    Quaternionx quat(rotationMatrix);
+
+    std::vector<double> rotation = {
+        quat.x(),
+        quat.y(),
+        quat.z(),
+        quat.w(),
+    };
+
+    std::cout << "Objects size: " << state.objects.size() << std::endl;
+    // Set camera position and rotation
+    state.objects[object_index].position = position;
+    state.objects[object_index].rotation = rotation;
+}
+
+/**
+ * setCameraPoseUsingROSCoordinates accepts camera pose in ros frame
+ * @param ros_pose Pose of the camera
+ * @param cam_index Index of the camera
+ */
 void FlightGogglesClient::setCameraPoseUsingROSCoordinates(Transform3 ros_pose, int cam_index) {
     // To transforms
     Transform3 NED_pose = convertROSToNEDCoordinates(ros_pose);

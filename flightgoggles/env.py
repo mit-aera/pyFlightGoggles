@@ -309,21 +309,19 @@ class flightgoggles_env():
         return self.vehicle_set[vehicle_id]["model"].get_state()
 
     def set_state_object(self, object_id, position, attitude):
-        pos_t2, att_t2 = ned2enu(position, attitude)
         if self.object_set[object_id]["renderer"] == -1:
             for renderer_key in self.fg_renderer.keys():
                 self.fg_renderer[renderer_key] \
-                     .setObjectPose(pos_t2, att_t2, self.object_set[object_id]["index"][renderer_key])
+                     .setObjectPose(position, attitude, self.object_set[object_id]["index"][renderer_key])
         else:
             self.fg_renderer[self.object_set[object_id]["renderer"]] \
-                 .setObjectPose(pos_t2, att_t2, self.object_set[object_id]["index"][self.object_set[object_id]["renderer"]])
+                 .setObjectPose(position, attitude, self.object_set[object_id]["index"][self.object_set[object_id]["renderer"]])
         
         return
     
     def set_state_camera(self, camera_id, position, attitude, flag_save_logs=False, flag_update_simulation=True):
-        pos_t2, att_t2 = ned2enu(position, attitude)
         self.fg_renderer[self.camera_set[camera_id]["renderer"]] \
-            .setCameraPose(pos_t2, att_t2, self.camera_set[camera_id]["index"])
+            .setCameraPose(position, attitude, self.camera_set[camera_id]["index"])
         self.fg_renderer[self.camera_set[camera_id]["renderer"]] \
             .setStateTime(self.fg_renderer[self.camera_set[camera_id]["renderer"]].getTimestamp())
         self.fg_renderer[self.camera_set[camera_id]["renderer"]].requestRender()
@@ -366,13 +364,11 @@ class flightgoggles_env():
     def initialize_state(self):
         for camera_key in self.camera_set.keys():
             self.camera_set[camera_key]["logs"] = []
-            pos_t2, att_t2 = ned2enu(
-                self.camera_set[camera_key]['initialPose'][:3], 
-                self.camera_set[camera_key]['initialPose'][3:])
-            self.fg_renderer[self.camera_set[camera_key]["renderer"]].setCameraPose(pos_t2, att_t2, self.camera_set[camera_key]["index"])
-            self.camera_set[camera_key]["currentPos"] = pos_t2
-            self.camera_set[camera_key]["currentAtt"] = att_t2
-            # print("{} - pos_t: {}, {}".format(self.camera_set[camera_key]["index"], pos_t2, att_t2))
+            position = self.camera_set[camera_key]['initialPose'][:3]
+            attitude = self.camera_set[camera_key]['initialPose'][3:]
+            self.fg_renderer[self.camera_set[camera_key]["renderer"]].setCameraPose(position, attitude, self.camera_set[camera_key]["index"])
+            self.camera_set[camera_key]["currentPos"] = position
+            self.camera_set[camera_key]["currentAtt"] = attitude
         
         for vehicle_key in self.vehicle_set.keys():
             self.vehicle_set[vehicle_key]["model"].initialize_state()
@@ -637,12 +633,9 @@ class flightgoggles_env():
                                 self.camera_set[key_t]["currentAtt"], 
                                 self.camera_set[key_t]["index"])
 
-                    pos_t2, att_t2 = ned2enu(position, attitude)
-                    self.fg_renderer[self.camera_set[camera_key]["renderer"]].setCameraPose(pos_t2, att_t2, self.camera_set[camera_key]["index"])
-                    # self.fgc.setCameraPose(pos_t2, att_t2, 1)
-                    self.camera_set[camera_key]["currentPos"] = pos_t2
-                    self.camera_set[camera_key]["currentAtt"] = att_t2
-                    # print("single {} - pos_t: {}, {}".format(self.camera_set[camera_key]["index"], pos_t2, att_t2))
+                    self.fg_renderer[self.camera_set[camera_key]["renderer"]].setCameraPose(position, attitude, self.camera_set[camera_key]["index"])
+                    self.camera_set[camera_key]["currentPos"] = position
+                    self.camera_set[camera_key]["currentAtt"] = attitude
                     
                     self.fg_renderer[self.camera_set[camera_key]["renderer"]].setStateTime( \
                         self.fg_renderer[self.camera_set[camera_key]["renderer"]].getTimestamp())
@@ -697,17 +690,13 @@ class flightgoggles_env():
                         for camera_key in self.vehicle_set[vehicle_key]["model"].camera_info.keys():
                             pos_t = self.vehicle_set[vehicle_key]["model"].camera_pose[camera_key]["position"]
                             att_t = self.vehicle_set[vehicle_key]["model"].camera_pose[camera_key]["attitude"]
-                            # self.fgc.setCameraPose(pos_t, att_t, self.camera_set[camera_key]["index"])
-                            # print("pos_t: {}, {}".format(pos_t, att_t))
-                            pos_t2, att_t2 = ned2enu(pos_t, att_t)
-                            # print("pos_t2: {}, {}".format(pos_t2, att_t2))
+                            
                             self.fg_renderer[self.camera_set[camera_key]["renderer"]].setCameraPose( \
-                                pos_t2, att_t2, self.camera_set[camera_key]["index"])
-                            self.camera_set[camera_key]["currentPos"] = pos_t2
-                            self.camera_set[camera_key]["currentAtt"] = att_t2
+                                pos_t, att_t, self.camera_set[camera_key]["index"])
+                            self.camera_set[camera_key]["currentPos"] = pos_t
+                            self.camera_set[camera_key]["currentAtt"] = att_t
                             if self.camera_set[camera_key]["renderer"] not in renderer_key_set:
                                 renderer_key_set.append(self.camera_set[camera_key]["renderer"])
-                            # print("{} - pos_t: {}, {}".format(self.camera_set[camera_key]["index"], pos_t2, att_t2))
                     for key_t in static_camera_keys_t:
                         self.fg_renderer[self.camera_set[key_t]["renderer"]].setCameraPose(
                             self.camera_set[key_t]["currentPos"], 
@@ -762,17 +751,12 @@ class flightgoggles_env():
                         for camera_key in self.vehicle_set[vehicle_key]["model"].camera_info.keys():
                             pos_t = self.vehicle_set[vehicle_key]["model"].camera_pose[camera_key]["position"]
                             att_t = self.vehicle_set[vehicle_key]["model"].camera_pose[camera_key]["attitude"]
-                            # self.fgc.setCameraPose(pos_t, att_t, self.camera_set[camera_key]["index"])
-                            # print("pos_t: {}, {}".format(pos_t, att_t))
-                            pos_t2, att_t2 = ned2enu(pos_t, att_t)
-                            # print("pos_t2: {}, {}".format(pos_t2, att_t2))
                             self.fg_renderer[self.camera_set[camera_key]["renderer"]].setCameraPose( \
-                                pos_t2, att_t2, self.camera_set[camera_key]["index"])
-                            self.camera_set[camera_key]["currentPos"] = pos_t2
-                            self.camera_set[camera_key]["currentAtt"] = att_t2
+                                pos_t, att_t, self.camera_set[camera_key]["index"])
+                            self.camera_set[camera_key]["currentPos"] = pos_t
+                            self.camera_set[camera_key]["currentAtt"] = att_t
                             if self.camera_set[camera_key]["renderer"] not in renderer_key_set:
                                 renderer_key_set.append(self.camera_set[camera_key]["renderer"])
-                            # print("{} - pos_t: {}, {}".format(self.camera_set[camera_key]["index"], pos_t2, att_t2))
                     
                     for renderer_key in renderer_key_set:
                         self.fg_renderer[renderer_key].setStateTime(self.fg_renderer[renderer_key].getTimestamp())

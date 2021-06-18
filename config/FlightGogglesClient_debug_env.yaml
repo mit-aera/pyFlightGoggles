@@ -15,7 +15,7 @@ camera_model:
     0:
         ID: cam0
         channels: 3
-        initialPose: [50.0,-49.0,-2.0,0,0,0,1]
+        initialPose: [0.0, 0.0, 0.0, 1, 0, 0, 0]
         renderer: 0
         freq: 30
         outputShaderType: -1
@@ -24,9 +24,10 @@ camera_model:
 vehicle_model:
     uav1:
         type: "uav"
-        initialPose: [50.0,-49.0,-2.0,0,0,0,1]
+        initialPose: [-6.5, -18.5, -1.0, 0.707, 0.0, 0.0, -0.707]
         imu_freq: 200
         checkCollision: False
         cameraInfo:
             cam0:
-                relativePose: [0,0,0,1,0,0,0]
+                relativePose: [0, 0, 0, 1, 0, 0, 0]
+

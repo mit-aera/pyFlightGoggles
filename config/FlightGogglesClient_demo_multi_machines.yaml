@@ -1,0 +1,60 @@
+state:
+    sceneFilename: "Stata_GroundFloor"
+    camWidth: 640
+    camHeight: 480
+    camFOV: 70.0
+    camDepthScale: 0.20
+
+renderer:
+    0:
+        inputPort: "10253"
+        outputPort: "10254"
+    1:
+        inputPort: "10255"
+        outputPort: "10256"
+
+objects:
+    0:
+         ID: uav1
+         prefabID: Blackeagle
+         size_x: 5
+         size_y: 5
+         size_z: 5
+
+camera_model:
+    0:
+        ID: cam0
+        channels: 3
+        renderer: 0
+        freq: 30
+        outputShaderType: -1
+        hasCollisionCheck: False
+    1:
+        ID: cam1
+        channels: 3
+        renderer: 1
+        freq: 30
+        outputShaderType: -1
+        hasCollisionCheck: False
+    2:
+        ID: cam2
+        channels: 3
+        renderer: 1
+        freq: 30
+        outputShaderType: -1
+        hasCollisionCheck: False
+        initialPose: [-10.5, -18.5, -2, 1.0, 0, 0, 0]
+
+vehicle_model:
+    uav1:
+        type: "uav"
+        initialPose: [-6.5, -18.5, -2,  0.707, 0, 0, -0.707]
+        imu_freq: 200
+        objectsInfo:
+            uav1:
+                relativePose: [0, 0, 0.3, 0.707, 0, 0, -0.707]
+        cameraInfo:
+            cam0:
+                relativePose: [0.2, 0, 0, 1, 0, 0, 0]
+            cam1:
+                relativePose: [-0.2, 0, 0, 1, 0, 0, 0]

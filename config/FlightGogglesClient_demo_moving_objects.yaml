@@ -32,13 +32,13 @@ camera_model:
         freq: 30
         outputShaderType: -1
         hasCollisionCheck: False
-        initialPose: [18.5,-8.5,-2,0.707,0,0,0.707]
+        initialPose: [-8.5, -18.5, -2, 1.0, 0, 0, 0]
 
 vehicle_model:
     uav1:
         type: "uav"
-        initialPose: [18.5,-6.5,-1,6.0,0,0,0]
+        initialPose: [-6.5, -18.5, -1, 1.0, 0, 0, 0]
         imu_freq: 200
         objectsInfo:
             uav1:
-                relativePose: [0,0,0,-0.707,0,0,0.707]
+                relativePose: [0, 0, 0, 0.707, 0, 0, -0.707]

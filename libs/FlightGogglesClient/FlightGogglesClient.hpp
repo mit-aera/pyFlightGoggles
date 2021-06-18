@@ -76,6 +76,12 @@ class FlightGogglesClient
 
     /// Set object pose using ROS coordinates. 
     void setObjectPoseUsingROSCoordinates(Eigen::Affine3d ros_pose, int object_index);
+    
+    /// Set camera pose using NED coordinates.
+    void setCameraPoseUsingNEDCoordinates(Eigen::Affine3d ros_pose, int cam_index);
+
+    /// Set object pose using NED coordinates. 
+    void setObjectPoseUsingNEDCoordinates(Eigen::Affine3d ros_pose, int object_index);
 
 
     /// Send render request to Unity

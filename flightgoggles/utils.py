@@ -102,26 +102,27 @@ def Euler2quat(att):
     
     return q
 
-# body->unity
-def ned2enu(pos, att):
-    r_bias2 = R.from_euler('x', 180, degrees=True)
-    r_att = R.from_quat(quat_wx2xw(att))
-    # P = np.array([
-    #     [0,-1,0],
-    #     [-1,0,0],
-    #     [0,0,-1]
-    # ])
-    P = np.array([
-        [0,1,0],
-        [1,0,0],
-        [0,0,-1]
-    ])
-    r_P = R.from_matrix(P)
-    pos_t = P.dot(pos)
-    att_t = quat_xw2wx(R.as_quat(r_P*r_att*r_bias2))
-    # att_t = quat_xw2wx(R.as_quat(r_P*r_att))
-    # att_t = mul_quat(quat_xw2wx(R.as_quat(r_P)),att)
-    # R_att = R.as_matrix(R.from_quat(quat_wx2xw(att)))
-    # att_t = quat_xw2wx(R.as_quat(R.from_matrix(P.dot(R_att))))
+# # body->unity
+# def ned2enu(pos, att):
+#     return pos,att
+#     r_bias2 = R.from_euler('x', 180, degrees=True)
+#     r_att = R.from_quat(quat_wx2xw(att))
+#     # P = np.array([
+#     #     [0,-1,0],
+#     #     [-1,0,0],
+#     #     [0,0,-1]
+#     # ])
+#     P = np.array([
+#         [1,0,0],
+#         [0,-1,0],
+#         [0,0,-1]
+#     ])
+#     r_P = R.from_matrix(P)
+#     pos_t = P.dot(pos)
+#     att_t = quat_xw2wx(R.as_quat(r_P*r_att*r_bias2))
+#     # att_t = quat_xw2wx(R.as_quat(r_P*r_att))
+#     # att_t = mul_quat(quat_xw2wx(R.as_quat(r_P)),att)
+#     # R_att = R.as_matrix(R.from_quat(quat_wx2xw(att)))
+#     # att_t = quat_xw2wx(R.as_quat(R.from_matrix(P.dot(R_att))))
 
-    return pos_t, att_t
+#     return pos_t, att_t

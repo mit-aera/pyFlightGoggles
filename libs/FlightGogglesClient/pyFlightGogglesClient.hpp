@@ -28,7 +28,7 @@ public:
         Eigen::Quaterniond q = Eigen::Quaterniond(quat[0], quat[1], quat[2], quat[3]);
         camera_pose.linear() = q.normalized().toRotationMatrix();
 
-        flightGoggles->setCameraPoseUsingROSCoordinates(camera_pose, cam_index);
+        flightGoggles->setCameraPoseUsingNEDCoordinates(camera_pose, cam_index);
     }
     
     void setObjectPose(const Eigen::Vector3d & pos, const Eigen::Vector4d & quat, int object_index) {
@@ -37,15 +37,15 @@ public:
         Eigen::Quaterniond q = Eigen::Quaterniond(quat[0], quat[1], quat[2], quat[3]);
         object_pose.linear() = q.normalized().toRotationMatrix();
 
-        flightGoggles->setObjectPoseUsingROSCoordinates(object_pose, object_index);
+        flightGoggles->setObjectPoseUsingNEDCoordinates(object_pose, object_index);
     }
     
-    void setCameraPoseUsingROSCoordinates(const Eigen::Affine3d & ros_pose, int cam_index) {
-        flightGoggles->setCameraPoseUsingROSCoordinates(ros_pose, cam_index);
+    void setCameraPoseUsingNEDCoordinates(const Eigen::Affine3d & ros_pose, int cam_index) {
+        flightGoggles->setCameraPoseUsingNEDCoordinates(ros_pose, cam_index);
     }
     
-    void setObjectPoseUsingROSCoordinates(const Eigen::Affine3d & ros_pose, int object_index) {
-        flightGoggles->setObjectPoseUsingROSCoordinates(ros_pose, object_index);
+    void setObjectPoseUsingNEDCoordinates(const Eigen::Affine3d & ros_pose, int object_index) {
+        flightGoggles->setObjectPoseUsingNEDCoordinates(ros_pose, object_index);
     }
     
     void addCamera(std::string ID, int outputIndex, int shaderType=-1, bool hasCollisionCheck=true) {
@@ -143,13 +143,13 @@ void bind_FlightGogglesClient(py::module &m) {
             py::arg("input_port")="10253", 
             py::arg("output_port")="10254")
         .def("setCameraPose", &PyFlightGogglesClient::setCameraPose, "set camera pose")
-        .def("setCameraPoseUsingROSCoordinates", 
-            &PyFlightGogglesClient::setCameraPoseUsingROSCoordinates, 
-            "set camera pose using ROS coordinates")
+        .def("setCameraPoseUsingNEDCoordinates", 
+            &PyFlightGogglesClient::setCameraPoseUsingNEDCoordinates, 
+            "set camera pose using NED coordinates")
         .def("setObjectPose", &PyFlightGogglesClient::setObjectPose, "set object pose")
-        .def("setObjectPoseUsingROSCoordinates", 
-            &PyFlightGogglesClient::setObjectPoseUsingROSCoordinates, 
-            "set object pose using ROS coordinates")
+        .def("setObjectPoseUsingNEDCoordinates", 
+            &PyFlightGogglesClient::setObjectPoseUsingNEDCoordinates, 
+            "set object pose using NED coordinates")
         .def("addCamera", &PyFlightGogglesClient::addCamera, "add camera")
         .def("addObject", &PyFlightGogglesClient::addObject, "add object")
         .def("setStateTime", &PyFlightGogglesClient::setStateTime, "set state timestamp")
