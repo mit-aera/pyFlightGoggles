@@ -54,6 +54,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     ext_modules=[CMakeExtension('src')],
+    packages=find_packages(include=['flightgoggles']),
     cmdclass={
         'build_ext': build_ext,
     },
